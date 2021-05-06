@@ -1,0 +1,29 @@
+name: 'Turbine deploy'
+description: 'Deploy your new version of your component'
+
+inputs:
+  token:
+    description: 'A turbine token associated to your team'
+    required: true
+  version:
+    description: 'the version to deploy'
+    required: false
+    default: ${{ github.event.ref }}
+  component:
+    description: 'the version to deploy'
+    required: false
+    default: ${{ github.repository }}
+  environment:
+    description: 'the environment where to deploy this component version'
+    required: false
+
+runs:
+  using: 'composite'
+  steps:
+    - run: ${{ github.action_path }}/turbine-deploy.sh
+      shell: bash
+      env:
+        TURBINE_TOKEN: ${{ inputs.token }}
+        TURBINE_VERSION: ${{ inputs.version }}
+        TURBINE_COMPONENT: ${{ inputs.component }}
+        TURBINE_ENVIRONMENT: ${{ inputs.environment }}
