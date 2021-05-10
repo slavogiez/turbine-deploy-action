@@ -46,10 +46,12 @@ then
 	exit 1
 fi
 
+JOB_ID=""
+
 if [[ -z "$ENVIRONMENT_NAME" ]]
 then
 	# no env given, job image_post_build
-	curl -sS -X POST \
+	JOB_ID=$(curl -sS -X POST \
 	  -H "Content-Type: application/json" \
 	  -H "Authorization: Bearer $TEAM_TOKEN" \
 	  --data '{
@@ -59,11 +61,11 @@ then
 	    "version": "'$VERSION_TO_DEPLOY'"
 	  },
 	  "state": "PENDING"
-	}' $TURBINE_JOBS_URL
+	}' $TURBINE_JOBS_URL | jq -r '.id')
 
 else
 	# env given, job image_deploy
-	curl -sS -X POST \
+	JOB_ID=$(curl -sS -X POST \
 	  -H "Content-Type: application/json" \
 	  -H "Authorization: Bearer $TEAM_TOKEN" \
 	  --data '{
@@ -74,7 +76,29 @@ else
 	    "version": "'$VERSION_TO_DEPLOY'"
 	  },
 	  "state": "PENDING"
-	}' $TURBINE_JOBS_URL
+	}' $TURBINE_JOBS_URL | jq -r '.id')
 
 fi
 
+if [[ -z "$JOB_ID" ]]
+then
+	echo "Got empty job id"
+	exit 1
+fi
+
+for i in $(seq 1 100); do
+
+	echo "waiting for job to end..."
+	sleep 3
+	JOB="$(curl -sS -X GET \
+	  -H "Authorization: Bearer $TEAM_TOKEN" \
+	  $TURBINE_URL'/api/jobs-manager/jobs/'$JOB_ID)"
+
+	JOB_STATE=$(echo "$JOB" | jq -r '.state')
+	if [ "$JOB_STATE" = 'FAILURE' ] || [ "$JOB_STATE" = 'SUCCESS' ] || [ "$JOB_STATE" = 'CANCELLED' ]
+	then
+	  echo $JOB | jq -r '.logs'
+	  break
+	fi
+
+done
