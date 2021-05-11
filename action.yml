@@ -10,7 +10,7 @@ inputs:
     required: false
     default: ${{ github.event.ref }}
   component:
-    description: 'the version to deploy'
+    description: 'the turbine component to deploy'
     required: false
     default: ${{ github.repository }}
   environment:
