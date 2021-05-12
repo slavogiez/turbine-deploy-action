@@ -98,6 +98,12 @@ for i in $(seq 1 100); do
 	if [ "$JOB_STATE" = 'FAILURE' ] || [ "$JOB_STATE" = 'SUCCESS' ] || [ "$JOB_STATE" = 'CANCELLED' ]
 	then
 	  echo $JOB | jq -r '.logs'
+
+	  if [ "$JOB_STATE" != 'SUCCESS' ]
+	  then
+	  	exit 1
+	  fi
+
 	  break
 	fi
 
