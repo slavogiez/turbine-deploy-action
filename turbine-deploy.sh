@@ -51,6 +51,19 @@ JOB_ID=""
 if [[ -z "$ENVIRONMENT_NAME" ]]
 then
 	# no env given, job image_post_build
+  echo "Starting job image_post_build with parameters
+    service: '$COMPONENT_NAME',
+    version: '$VERSION_TO_DEPLOY'"
+  echo curl -sS -X POST \
+	  -H "Content-Type: application/json" \
+	  --data '{
+	  "type": "image_post_build",
+	  "parameters": {
+	    "service": "'$COMPONENT_NAME'",
+	    "version": "'$VERSION_TO_DEPLOY'"
+	  },
+	  "state": "PENDING"
+	}' $TURBINE_JOBS_URL
 	JOB_ID=$(curl -sS -X POST \
 	  -H "Content-Type: application/json" \
 	  -H "Authorization: Bearer $TEAM_TOKEN" \
@@ -65,6 +78,22 @@ then
 
 else
 	# env given, job image_deploy
+  echo "Starting job image_deploy with parameters
+    environment: '$ENVIRONMENT_NAME',
+    service: '$COMPONENT_NAME',
+    version: '$VERSION_TO_DEPLOY'"
+
+  echo curl -sS -X POST \
+	  -H "Content-Type: application/json" \
+	  --data '{
+	  "type": "image_deploy",
+	  "parameters": {
+	    "environment": "'$ENVIRONMENT_NAME'",
+	    "service": "'$COMPONENT_NAME'",
+	    "version": "'$VERSION_TO_DEPLOY'"
+	  },
+	  "state": "PENDING"
+	}' $TURBINE_JOBS_URL
 	JOB_ID=$(curl -sS -X POST \
 	  -H "Content-Type: application/json" \
 	  -H "Authorization: Bearer $TEAM_TOKEN" \
@@ -86,6 +115,9 @@ then
 	exit 1
 fi
 
+echo "Got job id: $JOB_ID"
+echo "You can see full job at $TURBINE_URL/jobs/$JOB_ID"
+
 for i in $(seq 1 100); do
 
 	echo "waiting for job to end..."
@@ -98,13 +130,16 @@ for i in $(seq 1 100); do
 	if [ "$JOB_STATE" = 'FAILURE' ] || [ "$JOB_STATE" = 'SUCCESS' ] || [ "$JOB_STATE" = 'CANCELLED' ]
 	then
 	  echo $JOB | jq -r '.logs'
+    echo "Job ended in state: $JOB_STATE"
 
 	  if [ "$JOB_STATE" != 'SUCCESS' ]
 	  then
 	  	exit 1
 	  fi
 
-	  break
+	  exit 0
 	fi
 
 done
+
+echo "Time out while waiting for job to end"
