@@ -12,7 +12,7 @@ Add this in your workflow:
 - name: Turbine Deploy
   uses: adeo/turbine-deploy-action@main  ## Important: replace "main" branch with latest release commit hash
   with:
-    token: TOKEN  ## replace with your Turbine team token
+    token: ${{ env.TURBINE_TOKEN }}
 ```
 
 
@@ -24,7 +24,7 @@ Add this in your workflow:
 - name: Turbine Deploy
   uses: adeo/turbine-deploy-action@main  ## Important: replace "main" branch with latest release commit hash
   with:
-    token: TOKEN  ## replace with your Turbine team token
+    token: ${{ env.TURBINE_TOKEN }}
     environment: adeo-myapp-prod  ## replace with your Turbine environment name
 ```
 
