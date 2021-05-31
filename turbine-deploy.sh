@@ -54,17 +54,7 @@ then
   echo "Starting job image_post_build with parameters
     service: '$COMPONENT_NAME',
     version: '$VERSION_TO_DEPLOY'"
-  curl -v -X POST \
-	  -H "Content-Type: application/json" \
-	  -H "Authorization: Bearer $TEAM_TOKEN" \
-	  --data '{
-	  "type": "image_post_build",
-	  "parameters": {
-	    "service": "'$COMPONENT_NAME'",
-	    "version": "'$VERSION_TO_DEPLOY'"
-	  },
-	  "state": "PENDING"
-	}' $TURBINE_JOBS_URL
+
 	JOB_ID=$(curl -sS -X POST \
 	  -H "Content-Type: application/json" \
 	  -H "Authorization: Bearer $TEAM_TOKEN" \
@@ -84,17 +74,6 @@ else
     service: '$COMPONENT_NAME',
     version: '$VERSION_TO_DEPLOY'"
 
-  echo curl -sS -X POST \
-	  -H "Content-Type: application/json" \
-	  --data '{
-	  "type": "image_deploy",
-	  "parameters": {
-	    "environment": "'$ENVIRONMENT_NAME'",
-	    "service": "'$COMPONENT_NAME'",
-	    "version": "'$VERSION_TO_DEPLOY'"
-	  },
-	  "state": "PENDING"
-	}' $TURBINE_JOBS_URL
 	JOB_ID=$(curl -sS -X POST \
 	  -H "Content-Type: application/json" \
 	  -H "Authorization: Bearer $TEAM_TOKEN" \
