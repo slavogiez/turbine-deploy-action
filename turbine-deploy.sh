@@ -54,8 +54,9 @@ then
   echo "Starting job image_post_build with parameters
     service: '$COMPONENT_NAME',
     version: '$VERSION_TO_DEPLOY'"
-  echo curl -sS -X POST \
+  curl -v -X POST \
 	  -H "Content-Type: application/json" \
+	  -H "Authorization: Bearer $TEAM_TOKEN" \
 	  --data '{
 	  "type": "image_post_build",
 	  "parameters": {
