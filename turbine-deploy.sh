@@ -52,7 +52,7 @@ if [[ -z "$ENVIRONMENT_NAME" ]]
 then
 	# no env given, job image_post_build
   echo "Starting job image_post_build with parameters
-    service: '$COMPONENT_NAME',
+    component: '$COMPONENT_NAME',
     version: '$VERSION_TO_DEPLOY'"
 
 	JOB_ID=$(curl -sS -X POST \
@@ -61,7 +61,7 @@ then
 	  --data '{
 	  "type": "image_post_build",
 	  "parameters": {
-	    "service": "'$COMPONENT_NAME'",
+	    "component": "'$COMPONENT_NAME'",
 	    "version": "'$VERSION_TO_DEPLOY'"
 	  },
 	  "state": "PENDING"
@@ -71,7 +71,7 @@ else
 	# env given, job image_deploy
   echo "Starting job image_deploy with parameters
     environment: '$ENVIRONMENT_NAME',
-    service: '$COMPONENT_NAME',
+    component: '$COMPONENT_NAME',
     version: '$VERSION_TO_DEPLOY'"
 
 	JOB_ID=$(curl -sS -X POST \
@@ -81,7 +81,7 @@ else
 	  "type": "image_deploy",
 	  "parameters": {
 	    "environment": "'$ENVIRONMENT_NAME'",
-	    "service": "'$COMPONENT_NAME'",
+	    "component": "'$COMPONENT_NAME'",
 	    "version": "'$VERSION_TO_DEPLOY'"
 	  },
 	  "state": "PENDING"
