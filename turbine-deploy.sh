@@ -46,7 +46,7 @@ then
 	exit 1
 fi
 
-JOB_ID=""
+JOB_RESPONSE=""
 
 if [[ -z "$ENVIRONMENT_NAME" ]]
 then
@@ -55,7 +55,7 @@ then
     component: '$COMPONENT_NAME',
     version: '$VERSION_TO_DEPLOY'"
 
-	JOB_ID=$(curl -sS -X POST \
+	JOB_RESPONSE=$(curl -sS -X POST \
 	  -H "Content-Type: application/json" \
 	  -H "Authorization: Bearer $TEAM_TOKEN" \
 	  --data '{
@@ -65,7 +65,7 @@ then
 	    "version": "'$VERSION_TO_DEPLOY'"
 	  },
 	  "state": "PENDING"
-	}' $TURBINE_JOBS_URL | jq -r '.id')
+	}' $TURBINE_JOBS_URL)
 
 else
 	# env given, job image_deploy
@@ -74,7 +74,7 @@ else
     component: '$COMPONENT_NAME',
     version: '$VERSION_TO_DEPLOY'"
 
-	JOB_ID=$(curl -sS -X POST \
+	JOB_RESPONSE=$(curl -sS -X POST \
 	  -H "Content-Type: application/json" \
 	  -H "Authorization: Bearer $TEAM_TOKEN" \
 	  --data '{
@@ -85,13 +85,24 @@ else
 	    "version": "'$VERSION_TO_DEPLOY'"
 	  },
 	  "state": "PENDING"
-	}' $TURBINE_JOBS_URL | jq -r '.id')
+	}' $TURBINE_JOBS_URL)
 
 fi
+
+JOB_ID=$(echo $JOB_RESPONSE | jq -r '.id')
+
 
 if [[ -z "$JOB_ID" ]]
 then
 	echo "Got empty job id"
+	echo $JOB_RESPONSE
+	exit 1
+fi
+
+if [[ "$JOB_ID" = "null" ]]
+then
+	echo "Got empty job id"
+	echo $JOB_RESPONSE
 	exit 1
 fi
 
