@@ -134,3 +134,4 @@ for i in $(seq 1 100); do
 done
 
 echo "Time out while waiting for job to end"
+exit 1
